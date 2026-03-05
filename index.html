@@ -101,6 +101,12 @@
       gap: 1rem;
     }
 
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
     .tabs {
       margin-bottom: 1rem;
     }
@@ -511,8 +517,8 @@
     }
 
     @media (max-width: 768px) {
-      .grid-2, .grid-3 {
-        grid-template-columns: 1fr;
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr !important;
       }
 
       .info-grid {
@@ -537,22 +543,31 @@
 
     <div class="card">
       <!-- Basic Information -->
-      <div class="form-group">
-        <label for="clientName">Client Name *</label>
-        <input type="text" id="clientName" placeholder="Enter client name">
-      </div>
-
-      <div class="form-group">
-        <label for="productName">Product Name</label>
-        <input type="text" id="productName" placeholder="Enter product name (optional)">
-      </div>
-
-      <div class="form-group">
-        <label for="exchangeRate">USD/BRL Exchange Rate</label>
-        <input type="number" id="exchangeRate" step="0.0001" placeholder="e.g., 5.7500">
-      </div>
-
+      <!-- First Row: Exchange Rate and Target Price -->
       <div class="grid-2">
+        <div class="form-group">
+          <label for="exchangeRate">USD/BRL Exchange Rate</label>
+          <input type="number" id="exchangeRate" step="0.0001" placeholder="e.g., 5.7500">
+        </div>
+
+        <div class="form-group">
+          <label for="targetCFR">Target CFR Price per Ton (USD)</label>
+          <input type="number" id="targetCFR" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+
+      <!-- Second Row: Client Name, Product Name, EXW Price, Average Weight -->
+      <div class="grid-4">
+        <div class="form-group">
+          <label for="clientName">Client Name *</label>
+          <input type="text" id="clientName" placeholder="Enter client name">
+        </div>
+
+        <div class="form-group">
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" placeholder="Enter product name (optional)">
+        </div>
+
         <div class="form-group">
           <label for="exwPrice">EXW Price per Ton *</label>
           <div class="input-group">
@@ -568,11 +583,6 @@
           <label for="avgWeight">Average Weight per Container (tons) *</label>
           <input type="number" id="avgWeight" step="0.01" placeholder="0.00">
         </div>
-      </div>
-
-      <div class="form-group">
-        <label for="targetCFR">Target CFR Price per Ton (USD)</label>
-        <input type="number" id="targetCFR" step="0.01" placeholder="0.00">
       </div>
 
       <!-- Logistics Costs Tabs -->
