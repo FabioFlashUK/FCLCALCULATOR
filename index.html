@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FCL Global - Shipping Cost Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #334155;
+      font-size: 0.875rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.625rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .input-group input {
+      flex: 1;
+    }
+
+    .input-group select {
+      width: 80px;
+    }
+
+    .per-ton-display {
+      font-size: 0.75rem;
+      color: #15803d;
+      background: #f0fdf4;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.25rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .tabs {
+      margin-bottom: 1rem;
+    }
+
+    .tab-list {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 1rem;
+    }
+
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #64748b;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .tab-button.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .button-primary {
+      background: #667eea;
+      color: white;
+      flex: 1;
+    }
+
+    .button-primary:hover {
+      background: #5568d3;
+    }
+
+    .button-secondary {
+      background: white;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      flex: 1;
+    }
+
+    .button-secondary:hover {
+      background: #f8fafc;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .results {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .price-variance {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .price-variance.green {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    .price-variance.red {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .variance-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .variance-label {
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .variance-label.green {
+      color: #16a34a;
+    }
+
+    .variance-label.red {
+      color: #dc2626;
+    }
+
+    .variance-value {
+      font-size: 1.125rem;
+    }
+
+    .variance-value.green {
+      color: #15803d;
+    }
+
+    .variance-value.red {
+      color: #b91c1c;
+    }
+
+    .price-card {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .price-card.fas {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+    }
+
+    .price-card.fob {
+      background: #faf5ff;
+      border: 1px solid #d8b4fe;
+    }
+
+    .price-card.cfr {
+      background: #eff6ff;
+      border: 1px solid #93c5fd;
+    }
+
+    .price-label {
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .price-label.fas {
+      color: #b45309;
+    }
+
+    .price-label.fob {
+      color: #7c3aed;
+    }
+
+    .price-label.cfr {
+      color: #1d4ed8;
+    }
+
+    .price-value {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .price-value.fas {
+      color: #92400e;
+    }
+
+    .price-value.fob {
+      color: #6b21a8;
+    }
+
+    .price-value.cfr {
+      color: #1e40af;
+    }
+
+    .price-formula {
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .price-formula.fas {
+      color: #d97706;
+    }
+
+    .price-formula.fob {
+      color: #9333ea;
+    }
+
+    .price-formula.cfr {
+      color: #3b82f6;
+    }
+
+    .breakdown {
+      font-size: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .breakdown-label {
+      color: #1d4ed8;
+      margin-bottom: 0.25rem;
+    }
+
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.125rem;
+    }
+
+    .breakdown-name {
+      color: #3b82f6;
+    }
+
+    .breakdown-value {
+      color: #1e40af;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .close-button:hover {
+      color: #334155;
+    }
+
+    .offer-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .offer-title {
+      font-size: 1.5rem;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    .offer-date {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .client-info {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      font-size: 0.875rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 2px solid #cbd5e1;
+      font-weight: 600;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .info-item-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-item-value {
+      color: #1e293b;
+      font-size: 0.875rem;
+    }
+
+    .offer-footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.active {
+      display: block;
+    }
+
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        padding: 1rem;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="data:image/png;base64,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" alt="FCL Global Logo" class="logo">
+    </div>
+
+    <div class="card">
+      <!-- Basic Information -->
+      <div class="form-group">
+        <label for="clientName">Client Name *</label>
+        <input type="text" id="clientName" placeholder="Enter client name">
+      </div>
+
+      <div class="form-group">
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" placeholder="Enter product name (optional)">
+      </div>
+
+      <div class="form-group">
+        <label for="exchangeRate">USD/BRL Exchange Rate</label>
+        <input type="number" id="exchangeRate" step="0.0001" placeholder="e.g., 5.7500">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="exwPrice">EXW Price per Ton *</label>
+          <div class="input-group">
+            <input type="number" id="exwPrice" step="0.01" placeholder="0.00">
+            <select id="exwCurrency">
+              <option value="USD">USD</option>
+              <option value="BRL">BRL</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="avgWeight">Average Weight per Container (tons) *</label>
+          <input type="number" id="avgWeight" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="targetCFR">Target CFR Price per Ton (USD)</label>
+        <input type="number" id="targetCFR" step="0.01" placeholder="0.00">
+      </div>
+
+      <!-- Logistics Costs Tabs -->
+      <div class="tabs">
+        <div class="tab-list">
+          <button class="tab-button active" data-tab="separate">Separate Costs</button>
+          <button class="tab-button" data-tab="allin">All-In Cost</button>
+        </div>
+
+        <div class="tab-content active" id="separate">
+          <div class="grid-3">
+            <div class="form-group">
+              <label for="inlandCost">Inland Cost</label>
+              <div class="input-group">
+                <input type="number" id="inlandCost" step="0.01" placeholder="0.00">
+                <select id="inlandCurrency">
+                  <option value="USD">USD</option>
+                  <option value="BRL">BRL</option>
+                </select>
+              </div>
+              <div id="inlandPerTon" class="per-ton-display hidden"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="portFees">Port Fees (all)</label>
+              <div class="input-group">
+                <input type="number" id="portFees" step="0.01" placeholder="0.00">
+                <select id="portFeesCurrency">
+                  <option value="USD">USD</option>
+                  <option value="BRL">BRL</option>
+                </select>
+              </div>
+              <div id="portFeesPerTon" class="per-ton-display hidden"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="seaFreightCost">Sea Freight Cost</label>
+              <div class="input-group">
+                <input type="number" id="seaFreightCost" step="0.01" placeholder="0.00">
+                <select id="seaFreightCurrency">
+                  <option value="USD">USD</option>
+                  <option value="BRL">BRL</option>
+                </select>
+              </div>
+              <div id="seaFreightPerTon" class="per-ton-display hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="allin">
+          <div class="form-group">
+            <label for="allInCost">All-In Cost</label>
+            <div class="input-group">
+              <input type="number" id="allInCost" step="0.01" placeholder="0.00">
+              <select id="allInCurrency">
+                <option value="USD">USD</option>
+                <option value="BRL">BRL</option>
+              </select>
+            </div>
+            <div id="allInPerTon" class="per-ton-display hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button class="button button-primary" onclick="calculateCFR()">
+          Calculate
+        </button>
+        <button class="button button-secondary" onclick="generateOffer()">
+          Generate Offer
+        </button>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="results hidden">
+        <!-- Price Variance -->
+        <div id="priceVariance" class="hidden"></div>
+
+        <!-- Price Cards -->
+        <div id="priceCards"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offer Modal -->
+  <div id="offerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Shipping Offer</h2>
+        <button class="close-button" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="offerContent"></div>
+      <div class="modal-footer">
+        <p style="font-size: 0.875rem; color: #64748b;">Take a screenshot to save this offer</p>
+        <button class="button button-primary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // State management
+    let state = {
+      costMode: 'separate',
+      cfrPrice: null,
+      fasPrice: null,
+      fobPrice: null,
+      breakdown: null
+    };
+
+    // Utility functions
+    function convertToUSD(value, currency) {
+      if (currency === 'USD') return value;
+      const rate = parseFloat(document.getElementById('exchangeRate').value);
+      if (isNaN(rate) || rate <= 0) return 0;
+      return value / rate;
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} active`;
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 3000);
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+        
+        // Update buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabName).classList.add('active');
+        
+        state.costMode = tabName;
+      });
+    });
+
+    // Per-ton calculations display
+    function updatePerTonDisplays() {
+      const avgWeight = parseFloat(document.getElementById('avgWeight').value);
+      
+      if (!isNaN(avgWeight) && avgWeight > 0) {
+        // Inland
+        const inland = parseFloat(document.getElementById('inlandCost').value);
+        const inlandCurrency = document.getElementById('inlandCurrency').value;
+        if (!isNaN(inland)) {
+          const inlandUSD = convertToUSD(inland, inlandCurrency);
+          const inlandPerTon = inlandUSD / avgWeight;
+          document.getElementById('inlandPerTon').textContent = `≈ $${inlandPerTon.toFixed(2)} USD per ton`;
+          document.getElementById('inlandPerTon').classList.remove('hidden');
+        }
+
+        // Port Fees
+        const portFees = parseFloat(document.getElementById('portFees').value);
+        const portFeesCurrency = document.getElementById('portFeesCurrency').value;
+        if (!isNaN(portFees)) {
+          const feesUSD = convertToUSD(portFees, portFeesCurrency);
+          const feesPerTon = feesUSD / avgWeight;
+          document.getElementById('portFeesPerTon').textContent = `≈ $${feesPerTon.toFixed(2)} USD per ton`;
+          document.getElementById('portFeesPerTon').classList.remove('hidden');
+        }
+
+        // Sea Freight
+        const seaFreight = parseFloat(document.getElementById('seaFreightCost').value);
+        const seaFreightCurrency = document.getElementById('seaFreightCurrency').value;
+        if (!isNaN(seaFreight)) {
+          const seaFreightUSD = convertToUSD(seaFreight, seaFreightCurrency);
+          const seaFreightPerTon = seaFreightUSD / avgWeight;
+          document.getElementById('seaFreightPerTon').textContent = `≈ $${seaFreightPerTon.toFixed(2)} USD per ton`;
+          document.getElementById('seaFreightPerTon').classList.remove('hidden');
+        }
+
+        // All-In
+        const allIn = parseFloat(document.getElementById('allInCost').value);
+        const allInCurrency = document.getElementById('allInCurrency').value;
+        if (!isNaN(allIn)) {
+          const allInUSD = convertToUSD(allIn, allInCurrency);
+          const allInPerTon = allInUSD / avgWeight;
+          document.getElementById('allInPerTon').textContent = `≈ $${allInPerTon.toFixed(2)} USD per ton`;
+          document.getElementById('allInPerTon').classList.remove('hidden');
+        }
+      }
+    }
+
+    // Add event listeners for real-time per-ton display
+    ['avgWeight', 'inlandCost', 'inlandCurrency', 'portFees', 'portFeesCurrency', 
+     'seaFreightCost', 'seaFreightCurrency', 'allInCost', 'allInCurrency'].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('input', updatePerTonDisplays);
+        element.addEventListener('change', updatePerTonDisplays);
+      }
+    });
+
+    // Calculate CFR
+    function calculateCFR() {
+      const exwPrice = parseFloat(document.getElementById('exwPrice').value);
+      const avgWeight = parseFloat(document.getElementById('avgWeight').value);
+
+      if (isNaN(exwPrice) || isNaN(avgWeight) || avgWeight <= 0) {
+        showToast('Please enter valid EXW price and average weight', 'error');
+        return;
+      }
+
+      const exwCurrency = document.getElementById('exwCurrency').value;
+      const exchangeRate = document.getElementById('exchangeRate').value;
+
+      // Check if exchange rate is needed
+      if ((exwCurrency === 'BRL' || 
+           (state.costMode === 'separate' && 
+            (document.getElementById('inlandCurrency').value === 'BRL' || 
+             document.getElementById('portFeesCurrency').value === 'BRL' ||
+             document.getElementById('seaFreightCurrency').value === 'BRL')) ||
+           (state.costMode === 'allin' && document.getElementById('allInCurrency').value === 'BRL')) &&
+          (!exchangeRate || parseFloat(exchangeRate) <= 0)) {
+        showToast('Please enter a valid USD/BRL exchange rate', 'error');
+        return;
+      }
+
+      const exwInUSD = convertToUSD(exwPrice, exwCurrency);
+
+      let totalLogisticsCost = 0;
+      let inlandPerTon = 0;
+      let portFeesPerTon = 0;
+      let seaFreightPerTon = 0;
+      let allInPerTon = 0;
+
+      if (state.costMode === 'separate') {
+        const inland = parseFloat(document.getElementById('inlandCost').value) || 0;
+        const fees = parseFloat(document.getElementById('portFees').value) || 0;
+        const seaFreight = parseFloat(document.getElementById('seaFreightCost').value) || 0;
+        
+        const inlandInUSD = convertToUSD(inland, document.getElementById('inlandCurrency').value);
+        const feesInUSD = convertToUSD(fees, document.getElementById('portFeesCurrency').value);
+        const seaFreightInUSD = convertToUSD(seaFreight, document.getElementById('seaFreightCurrency').value);
+        
+        totalLogisticsCost = inlandInUSD + feesInUSD + seaFreightInUSD;
+        inlandPerTon = inlandInUSD / avgWeight;
+        portFeesPerTon = feesInUSD / avgWeight;
+        seaFreightPerTon = seaFreightInUSD / avgWeight;
+      } else {
+        const allIn = parseFloat(document.getElementById('allInCost').value) || 0;
+        totalLogisticsCost = convertToUSD(allIn, document.getElementById('allInCurrency').value);
+        allInPerTon = totalLogisticsCost / avgWeight;
+      }
+
+      const logisticsCostPerTon = totalLogisticsCost / avgWeight;
+      const calculatedCFR = exwInUSD + logisticsCostPerTon;
+
+      // Calculate FAS (EXW + Inland)
+      let calculatedFAS = null;
+      if (state.costMode === 'separate' && inlandPerTon > 0) {
+        calculatedFAS = exwInUSD + inlandPerTon;
+      }
+
+      // Calculate FOB (EXW + Inland + Port Fees)
+      let calculatedFOB = null;
+      if (state.costMode === 'separate' && (inlandPerTon > 0 || portFeesPerTon > 0)) {
+        calculatedFOB = exwInUSD + inlandPerTon + portFeesPerTon;
+      }
+
+      state.cfrPrice = calculatedCFR;
+      state.fasPrice = calculatedFAS;
+      state.fobPrice = calculatedFOB;
+      state.breakdown = {
+        exwPerTon: exwInUSD,
+        inlandPerTon,
+        portFeesPerTon,
+        seaFreightPerTon,
+        allInPerTon,
+        logisticsPerTon: logisticsCostPerTon
+      };
+
+      displayResults();
+      showToast('CFR price calculated successfully (in USD)');
+    }
+
+    // Display results
+    function displayResults() {
+      const results = document.getElementById('results');
+      const targetCFR = parseFloat(document.getElementById('targetCFR').value);
+      
+      results.classList.remove('hidden');
+
+      // Price variance
+      const varianceDiv = document.getElementById('priceVariance');
+      if (!isNaN(targetCFR) && targetCFR > 0) {
+        const variance = state.cfrPrice - targetCFR;
+        const isUnder = state.cfrPrice <= targetCFR;
+        const varClass = isUnder ? 'green' : 'red';
+        
+        varianceDiv.innerHTML = `
+          <div class="price-variance ${varClass}">
+            <div class="variance-content">
+              <div>
+                <div class="variance-label ${varClass}">Calculated CFR</div>
+                <div class="variance-value ${varClass}">$${state.cfrPrice.toFixed(2)}</div>
+              </div>
+              <div style="text-align: center; color: #64748b;">
+                <div style="font-size: 1.5rem;">${isUnder ? '✓' : '✗'}</div>
+                <div style="font-size: 0.75rem;">
+                  ${isUnder ? 'Under' : 'Over'} by $${Math.abs(variance).toFixed(2)}
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div class="variance-label ${varClass}">Target CFR</div>
+                <div class="variance-value ${varClass}">$${targetCFR.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+        varianceDiv.classList.remove('hidden');
+      } else {
+        varianceDiv.classList.add('hidden');
+      }
+
+      // Price cards
+      let cardsHTML = '<div class="grid-3">';
+
+      // FAS Price
+      if (state.fasPrice !== null) {
+        cardsHTML += `
+          <div class="price-card fas">
+            <div class="price-label fas">FAS Price per Ton (USD)</div>
+            <div class="price-value fas">$${state.fasPrice.toFixed(2)} USD</div>
+            <div class="price-formula fas">EXW + Inland Cost</div>
+          </div>
+        `;
+      }
+
+      // FOB Price
+      if (state.fobPrice !== null) {
+        cardsHTML += `
+          <div class="price-card fob">
+            <div class="price-label fob">FOB Price per Ton (USD)</div>
+            <div class="price-value fob">$${state.fobPrice.toFixed(2)} USD</div>
+            <div class="price-formula fob">EXW + Inland + Port Fees</div>
+          </div>
+        `;
+      }
+
+      // CFR Price
+      cardsHTML += `
+        <div class="price-card cfr">
+          <div class="price-label cfr">CFR Price per Ton (USD)</div>
+          <div class="price-value cfr">$${state.cfrPrice.toFixed(2)} USD</div>
+          <div class="breakdown">
+            <div class="breakdown-label">Breakdown (per ton):</div>
+            <div class="breakdown-item">
+              <span class="breakdown-name">EXW:</span>
+              <span class="breakdown-value">$${state.breakdown.exwPerTon.toFixed(2)}</span>
+            </div>
+            ${state.breakdown.inlandPerTon > 0 ? `
+              <div class="breakdown-item">
+                <span class="breakdown-name">Inland:</span>
+                <span class="breakdown-value">$${state.breakdown.inlandPerTon.toFixed(2)}</span>
+              </div>
+            ` : ''}
+            ${state.breakdown.portFeesPerTon > 0 ? `
+              <div class="breakdown-item">
+                <span class="breakdown-name">Port Fees:</span>
+                <span class="breakdown-value">$${state.breakdown.portFeesPerTon.toFixed(2)}</span>
+              </div>
+            ` : ''}
+            ${state.breakdown.seaFreightPerTon > 0 ? `
+              <div class="breakdown-item">
+                <span class="breakdown-name">Sea:</span>
+                <span class="breakdown-value">$${state.breakdown.seaFreightPerTon.toFixed(2)}</span>
+              </div>
+            ` : ''}
+            ${state.breakdown.allInPerTon > 0 ? `
+              <div class="breakdown-item">
+                <span class="breakdown-name">Logistics:</span>
+                <span class="breakdown-value">$${state.breakdown.allInPerTon.toFixed(2)}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      cardsHTML += '</div>';
+      document.getElementById('priceCards').innerHTML = cardsHTML;
+    }
+
+    // Generate offer
+    function generateOffer() {
+      const clientName = document.getElementById('clientName').value.trim();
+      
+      if (!clientName) {
+        showToast('Please enter a client name', 'error');
+        return;
+      }
+
+      if (state.cfrPrice === null || !state.breakdown) {
+        showToast('Please calculate CFR price first', 'error');
+        return;
+      }
+
+      const productName = document.getElementById('productName').value.trim();
+      const avgWeight = parseFloat(document.getElementById('avgWeight').value);
+      const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 1;
+      const today = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      const offerId = Date.now().toString().slice(-6);
+
+      let offerHTML = `
+        <div class="offer-header">
+          <img src="data:image/png;base64,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" alt="FCL Global" style="max-width: 150px; margin-bottom: 1rem;">
+          <h1 class="offer-title">Shipping Cost Offer</h1>
+          <p class="offer-date">${today}</p>
+        </div>
+
+        <div class="client-info">
+          <div style="margin-bottom: 0.5rem;"><strong>Client:</strong> ${clientName}</div>
+          ${productName ? `<div><strong>Product:</strong> ${productName}</div>` : ''}
+        </div>
+
+        <h3 style="margin-bottom: 1rem; color: #1e293b;">Price Breakdown</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th style="text-align: right;">Per Ton (USD)</th>
+              <th style="text-align: right;">Total (USD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>EXW Price</td>
+              <td style="text-align: right;">$${state.breakdown.exwPerTon.toFixed(2)}</td>
+              <td style="text-align: right;">$${(state.breakdown.exwPerTon * avgWeight).toFixed(2)}</td>
+            </tr>
+            ${state.breakdown.inlandPerTon > 0 ? `
+              <tr>
+                <td>Inland Logistics</td>
+                <td style="text-align: right;">$${state.breakdown.inlandPerTon.toFixed(2)}</td>
+                <td style="text-align: right;">$${(state.breakdown.inlandPerTon * avgWeight).toFixed(2)}</td>
+              </tr>
+            ` : ''}
+            ${state.breakdown.portFeesPerTon > 0 ? `
+              <tr>
+                <td>Port Fees (all)</td>
+                <td style="text-align: right;">$${state.breakdown.portFeesPerTon.toFixed(2)}</td>
+                <td style="text-align: right;">$${(state.breakdown.portFeesPerTon * avgWeight).toFixed(2)}</td>
+              </tr>
+            ` : ''}
+            ${state.breakdown.seaFreightPerTon > 0 ? `
+              <tr>
+                <td>Sea Freight</td>
+                <td style="text-align: right;">$${state.breakdown.seaFreightPerTon.toFixed(2)}</td>
+                <td style="text-align: right;">$${(state.breakdown.seaFreightPerTon * avgWeight).toFixed(2)}</td>
+              </tr>
+            ` : ''}
+            ${state.breakdown.allInPerTon > 0 ? `
+              <tr>
+                <td>Total Logistics</td>
+                <td style="text-align: right;">$${state.breakdown.allInPerTon.toFixed(2)}</td>
+                <td style="text-align: right;">$${(state.breakdown.allInPerTon * avgWeight).toFixed(2)}</td>
+              </tr>
+            ` : ''}
+            <tr>
+              <td><strong>Total CFR Price</strong></td>
+              <td style="text-align: right;"><strong>$${state.cfrPrice.toFixed(2)}</strong></td>
+              <td style="text-align: right;"><strong>$${(state.cfrPrice * avgWeight).toFixed(2)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Container Weight</div>
+            <div class="info-item-value">${avgWeight} tons</div>
+          </div>
+          <div>
+            <div class="info-item-label">Exchange Rate</div>
+            <div class="info-item-value">${exchangeRate.toFixed(4)} BRL/USD</div>
+          </div>
+          <div>
+            <div class="info-item-label">Offer ID</div>
+            <div class="info-item-value">#${offerId}</div>
+          </div>
+        </div>
+
+        <div class="offer-footer">
+          <p>This offer is valid for 30 days from the date above.</p>
+          <p style="margin-top: 0.5rem;">All prices are in USD unless otherwise stated.</p>
+        </div>
+      `;
+
+      document.getElementById('offerContent').innerHTML = offerHTML;
+      document.getElementById('offerModal').classList.add('active');
+      showToast('Offer generated!');
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('offerModal').classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('offerModal').addEventListener('click', (e) => {
+      if (e.target.id === 'offerModal') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
